@@ -1,3 +1,4 @@
+# curl https://raw.githubusercontent.com/ernesto-elsaesser/geounblocker/master/setup.sh > setup.sh
 # run as sudo!
 
 extip=$1
@@ -6,22 +7,22 @@ logdir=$3
 
 apt install dnsmasq sniproxy
 
+# local-ttl=60
 echo "
 log-facility=$logdir/dnsmasq.log
+domain-needed
 no-resolv
 no-hosts
 address=/#/$extip
+listen-address=127.0.0.1
 listen-address=$intip" > /etc/dnsmasq.conf
-
-# domain-needed
-# bogus-priv
-# listen-address=127.0.0.1
-# local-ttl=60
 
 # port dns=53 udp + tcp
 service dnsmasq restart
 
-
+#user daemon
+#resolver {
+#    mode ipv4_only
 echo "
 pidfile /var/run/sniproxy.pid
 
@@ -52,10 +53,6 @@ resolver {
     mode ipv4_first
 }
 " > /etc/sniproxy.conf
-
-#user daemon
-#resolver {
-#    mode ipv4_only
 
 # port http=80 & https=443 tcp
 service sniproxy restart
